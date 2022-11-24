@@ -1,26 +1,39 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <v-app :theme="theme">
+    <v-app-bar>
+      <v-spacer>
+        <v-icon icon="mdi-brain"></v-icon>
+        Redes Neurais - Inteligência Artificial
+      </v-spacer>
+
+      <v-btn
+        :prepend-icon="theme === 'light' ? 'mdi-weather-sunny' : 'mdi-weather-night'"
+        @click="onClick"
+      >Alterar Tema</v-btn>
+      <v-btn variant="text" icon="mdi-information-outline"></v-btn>
+    </v-app-bar>
+
+    <v-main>
+      <Conteudo/>
+    </v-main>
+  </v-app>
 </template>
 
-<script>
-import HelloWorld from './components/HelloWorld.vue'
+<script setup>
+  import { ref } from 'vue'
+  const theme = ref('dark')
 
-export default {
-  name: 'App',
-  components: {
-    HelloWorld
+  function onClick () {
+    theme.value = theme.value === 'light' ? 'dark' : 'light'
   }
-}
 </script>
+<script>
+import Conteudo from './components/Conteudo.vue'
+  export default {
+    name: 'App',
+    components: {
+      Conteudo
+    },
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
+  }
+</script>
