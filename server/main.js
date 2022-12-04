@@ -10,7 +10,6 @@ const app = express();
 const controller = new Controller();
 app.use(express.json());
 app.use(cors());
-var header = new Vue();
 
 var storage = multer.diskStorage(
     {
