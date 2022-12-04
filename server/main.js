@@ -22,6 +22,8 @@ var storage = multer.diskStorage(
 var upload = multer( { storage: storage } );
 
 
+app.post('/sendTreino', controller.sendTreino);
+
 app.post('/uploadFile', upload.array('file'), async (req, res) => {
     controller.convertFileToJson(req.files[0].filename);
     res.send({ upload: true, files: req.files });

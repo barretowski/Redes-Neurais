@@ -13,7 +13,10 @@ export default class controller
         csvToJson.generateJsonFileFromCsv(fileInputName,fileOutputName);
 
     };
-
+    async sendTreino(req, res)
+    {
+      console.log(req.body);
+    }
     async readJsonFile(req, res)
     {
         try {
