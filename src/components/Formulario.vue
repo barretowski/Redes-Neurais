@@ -1,58 +1,77 @@
 <template>
   <v-card>
-    <v-form v-model="valid">
+    <v-form v-model="valid" ref="form">
       <v-container fluid>
         <h5>Configurações de neurônios</h5>
         <v-row align="center" class="mb-4">
-          <v-col class="d-flex" cols="12" sm="3">
-            <v-text-field label="Camada de entrada" :rules="rules" hide-details="auto" disabled v-model="config.qtdEntrada"></v-text-field>
+          <v-col class="d-flex" cols="9" sm="3">
+            <v-text-field label="Camada de entrada"  hide-details="auto" disabled v-model="qtdEntrada"></v-text-field>
           </v-col>
 
-          <v-col class="d-flex" cols="12" sm="3">
-            <v-text-field label="Camada de Saída" :rules="rules" hide-details="auto" disabled v-model="config.qtdSaida"></v-text-field>
+          <v-col class="d-flex" cols="9" sm="3">
+            <v-text-field label="Camada de Saída" hide-details="auto" disabled v-model="qtdSaida"></v-text-field>
           </v-col>
 
-          <v-col class="d-flex" cols="12" sm="3">
-            <v-text-field :disabled="trava" label="Camada Oculta" :rules="rules" hide-details="auto"></v-text-field>
+          <v-col class="d-flex" cols="9" sm="3">
+            <v-text-field type="number" :disabled="trava" label="Camada Oculta" :rules="rules" required hide-details="auto" v-model="camadaOculta"></v-text-field>
           </v-col>
         </v-row>
 
         <h5>Configurações de teste</h5>
-        <v-row align="center" class="mb-4">
-          <v-col class="d-flex" cols="12" sm="2">
-            <v-text-field :disabled="trava" label="Valor do erro" :rules="rules" hide-details="auto"></v-text-field>
+        <v-row align="baseline"  class="mb-4">
+          <v-col class="d-flex" cols="9" sm="2">
+            <v-text-field type="number" :disabled="trava" label="Valor do erro" :rules="rules" hide-details="auto" required v-model="valorErro"></v-text-field>
           </v-col>
 
-          <v-col class="d-flex" cols="12" sm="2">
-            <v-text-field :disabled="trava" label="Nº de interações" :rules="rules" hide-details="auto"></v-text-field>
+          <v-col class="d-flex" cols="9" sm="2">
+            <v-text-field type="number" :disabled="trava" label="Nº de interações" :rules="rules" hide-details="auto" required v-model="nrInteracoes"></v-text-field>
           </v-col>
 
-          <v-col class="d-flex" cols="12" sm="2">
-            <v-text-field :disabled="trava" label="Tx. aprendizagem" :rules="rules" hide-details="auto"></v-text-field>
+          <v-col class="d-flex" cols="9" sm="2">
+            <v-text-field type="number" :disabled="trava" label="Tx. aprendizagem" :rules="rules" hide-details="auto" required v-model="txAprendizagem"></v-text-field>
           </v-col>
 
-          <v-col class="d-flex" cols="12" sm="4">
-            <v-select :disabled="trava" :items="items" label="Função de Transferência"></v-select>
-          </v-col>
-        </v-row>
-
-        <v-row align="center" class="mb-4">
-          <v-col class="d-flex" cols="12" sm="10">
-            <v-file-input :disabled="trava" counter v-on:change="saveFile" show-size accept=".csv"
-              label="Arquivo de Treino"></v-file-input>
+          <v-col class="d-flex" cols="9" sm="3">
+            <v-select :disabled="trava" :items="items" label="Função de Transferência" :rules="rules" required v-model="funcaoTransf"></v-select>
           </v-col>
         </v-row>
 
-        <v-row align="right" class="d-flex justify-center float-right mb-4">
-          <v-div class="d-flex justify-center align-baseline" style="gap: 1rem">
-            <v-btn :loading="loading[2]" :disabled="loading[2]" color="red" @click="load(2)">
-              Limpar
-            </v-btn>
-            <v-btn :loading="loading[1]" :disabled="loading[1]" color="success" @click="load(1)" v-model="btn">
-              {{btn}}
-            </v-btn>
-          </v-div>
-        </v-row>
+        <v-div :hidden="divTreinoTeste">
+          <v-row align="center" class="mb-4">
+            <v-col class="d-flex" cols="9" sm="9">
+              <v-file-input :disabled="trava" counter v-on:change="saveTreino"  required show-size accept=".csv"
+                label="Arquivo de Treino"></v-file-input>
+            </v-col>
+          </v-row>
+          <v-row align="right" class="d-flex justify-center float-right mb-4">
+            <v-div class="d-flex justify-center align-baseline" style="gap: 1rem">
+              <v-btn color="red" @click="cancel()">
+                Limpar
+              </v-btn>
+              <v-btn color="success" @click="save()" v-model="btn">
+                Iniciar Treino
+              </v-btn>
+            </v-div>
+          </v-row>
+        </v-div>
+        <v-div :hidden="!divTreinoTeste">
+          <v-row align="center" class="mb-4">
+            <v-col class="d-flex" cols="9" sm="9">
+              <v-file-input counter v-on:change="saveTeste" :rules="rulesFile" required show-size accept=".csv"
+                label="Arquivo de Teste"></v-file-input>
+            </v-col>
+          </v-row>
+          <v-row align="right" class="d-flex justify-center float-right mb-4">
+            <v-div class="d-flex justify-center align-baseline" style="gap: 1rem">
+              <v-btn color="red" @click="cancel()">
+                Limpar
+              </v-btn>
+              <v-btn color="success" @click="save()" v-model="btn">
+                Iniciar Teste
+              </v-btn>
+            </v-div>
+          </v-row>
+        </v-div>
       </v-container>
       <hr>
       <v-container fluid :hidden="oculto">
@@ -80,47 +99,68 @@
 export default {
   name: 'Formulario',
   data: () => ({
+    valid: true,
+    rules:[v => !!v || 'Campo obrigatório'],
+    rulesFile:[v => !!null || 'Insira o arquivo'],
+    //rulesTeste:[v => !!v || 'Envie o arquivo de teste',v => (v && v.size > 0) || 'Insira o arquivo de teste'],
+    fileInput: "",
+    funcaoTransf:"",
+    txAprendizagem: "",
+    nrInteracoes: "",
+    valorErro: "",
+    camadaOculta: "",
+    qtdEntrada: 0,
+    qtdSaida: 0,
     tab: "",
-    file: [],
+    fileTreino: [],
+    fileTeste: [],
     jsonFile: "",
     jsonObject: "",
     oculto: true,
     trava: false,
     btn: "Treinar",
     listItens: [],
-    loading: [],
     arrayClass: [],
-    config:{
-      qtdEntrada: 0,
-      qtdSaida: 0,
-    },
+    divTreinoTeste: false,
     columns: "",
     items: ['Linear', 'Logística', 'Hiperbólica'],
     header: [],
     dados: [],
+    dadosTabela: [],
   }),
   methods: {
-    load(i) {
-      let resp = false;
-      this.loading[i] = true;
-      if(i == 1)
-      {
-        this.sendFile();
-        resp = true;
-        this.btn = "Realizar Teste";
-      }
-      else
-      {
-        this.btn = "Treinar";
-      }
-      setTimeout(() => (this.loading[i] = false, this.trava = resp, this.oculto = !resp), 3000)
+    save()
+    {
+      if (!this.$refs.form.validate()) return;
+      
+      this.sendTreino();
+      this.divTreinoTeste = true;
+      setTimeout(() => (this.trava = true, this.oculto = false), 3000)
     },
-    saveFile(e) {
-      this.file = e.target.files;
+    cancel()
+    {
+      this.divTreinoTeste = false;
+      this.$refs.form.reset();
     },
-    async sendFile() {
+    saveTreino(e) {
+      this.fileTreino = e.target.files;
+    },
+    saveTeste(e){
+      this.fileTeste = e.target.files;
+    },
+    async sendTreino() {
       let dataForm = new FormData();
-      dataForm.append('file', this.file[0]);
+      dataForm.append('file', this.fileTreino[0]);
+      let res = await fetch(`http://localhost:8081/uploadFile`, {
+        method: 'POST',
+        body: dataForm,
+      });
+      let data = await res.json();
+      this.readFile();
+    },
+    async sendTeste() {
+      let dataForm = new FormData();
+      dataappend('file', this.fileTeste[0]);
       let res = await fetch(`http://localhost:8081/uploadFile`, {
         method: 'POST',
         body: dataForm,
@@ -140,17 +180,16 @@ export default {
       let firstLine = this.jsonObject[0];
       let columns = Object.keys(firstLine).toString().toLocaleUpperCase();
       this.header = columns.split(",");
-      this.createObject(columns.split(","));
-      this.config.qtdEntrada = this.header.length-1;
+      this.qtdEntrada = this.header.length-1;
       this.setValuesTable(columns);
     },
-    createObject(columns)
+    createObject(values)
     {
-      var obj = {};
-      columns.forEach(element => {
-        obj[element] = element;
+      var obj = {}; let i=0;
+      this.header.forEach(element => {
+        obj[element] = values[i++];
       });
-      console.log(obj);
+      this.dadosTabela.push(obj);
     },
     setValuesTable(columns)
     {
@@ -162,7 +201,6 @@ export default {
         line = line.split(",");
         for(let j=0; j<line.length;j++)
         {
-          let vl = {valor: line[j]};
           matrix[i][j] = line[j];
           if(j==line.length-1)
           {
@@ -170,11 +208,11 @@ export default {
               this.arrayClass.push(line[j]);
           }
         }
+        this.createObject(line);
         this.dados.push(matrix[i]);
         i++;
       });
-      this.config.qtdSaida = this.arrayClass.length;
-      console.log(this.arrayClass);
+      this.qtdSaida = this.arrayClass.length;
     }
   },
 
