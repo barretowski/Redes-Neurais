@@ -57,7 +57,7 @@
         <v-div :hidden="!divTreinoTeste">
           <v-row align="center" class="mb-4">
             <v-col class="d-flex" cols="9" sm="9">
-              <v-file-input counter v-on:change="saveTeste" :rules="rulesFile" required show-size accept=".csv"
+              <v-file-input v-on:change="saveTeste" :rules="rulesFile" required show-size accept=".csv"
                 label="Arquivo de Teste"></v-file-input>
             </v-col>
           </v-row>
@@ -101,7 +101,7 @@ export default {
   data: () => ({
     valid: true,
     rules:[v => !!v || 'Campo obrigatório'],
-    rulesFile:[v => !!null || 'Insira o arquivo'],
+    rulesFile:[v => !!v || 'File is required'],
     //rulesTeste:[v => !!v || 'Envie o arquivo de teste',v => (v && v.size > 0) || 'Insira o arquivo de teste'],
     fileInput: "",
     funcaoTransf:"",
@@ -131,11 +131,21 @@ export default {
   methods: {
     save()
     {
-      if (!this.$refs.form.validate()) return;
+      this.$refs.form.validate().then(
+        resp =>{
+          console.log(resp.valid, resp);
+          if(resp.valid)
+          {
+            this.sendTreino();
+            this.divTreinoTeste = true;
+            this.trava = true, this.oculto = false,
+            setTimeout(() => (this.divTreinoTeste=true), 3000);
+          }
+          else
+            return;
+        }
+      );
       
-      this.sendTreino();
-      this.divTreinoTeste = true;
-      setTimeout(() => (this.trava = true, this.oculto = false), 3000)
     },
     cancel()
     {
