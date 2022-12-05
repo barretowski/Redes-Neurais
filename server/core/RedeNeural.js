@@ -33,9 +33,11 @@ export default class RedeNeural {
         this.timeLineExecucaoRede = [];
         this.erroRede = 0;
         this.epocas = 0;
+        this.indiceFuncaoSaida = funcaoSaida;
         //provisorio
         this.funcaoSaida = FUNCOES_SAIDA[funcaoSaida].funcao;
         this.funcaoSaidaDx = FUNCOES_SAIDA[funcaoSaida].derivada;
+        this.classes = [];
 
         this.inicializarRede();
     }
@@ -109,6 +111,7 @@ export default class RedeNeural {
     treinar(dados, classes)
     {
         this.criarMatrizMaximoMinimo(dados);
+        this.classes = classes;
         let classe;
         let entradas;
         let saidaEsperada;
@@ -130,7 +133,7 @@ export default class RedeNeural {
 
             this.timeLineExecucaoRede.push({
                 erro : this.erroRede,
-                epoca : this.epocas
+                epocas : this.epocas
             });
            
             this.epocas++;

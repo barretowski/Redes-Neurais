@@ -23,6 +23,7 @@ var upload = multer( { storage: storage } );
 
 
 app.post('/sendTreino', controller.sendTreino);
+app.post('/sendTeste', upload.array('file'), controller.sendTeste);
 
 app.post('/uploadFile', upload.array('file'), async (req, res) => {
     controller.convertFileToJson(req.files[0].filename);

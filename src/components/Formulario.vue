@@ -5,7 +5,8 @@
         <h5>Configurações de neurônios</h5>
         <v-row align="center" class="mb-4">
           <v-col class="d-flex" cols="9" sm="3">
-            <v-text-field label="Camada de entrada"  hide-details="auto" disabled v-model="form.qtdEntrada"></v-text-field>
+            <v-text-field label="Camada de entrada" hide-details="auto" disabled
+              v-model="form.qtdEntrada"></v-text-field>
           </v-col>
 
           <v-col class="d-flex" cols="9" sm="3">
@@ -13,32 +14,37 @@
           </v-col>
 
           <v-col class="d-flex" cols="9" sm="3">
-            <v-text-field type="number" :disabled="trava" label="Camada Oculta" :rules="rules" required hide-details="auto" v-model="form.camadaOculta"></v-text-field>
+            <v-text-field type="number" :disabled="trava" label="Camada Oculta" :rules="rules" required
+              hide-details="auto" v-model="form.camadaOculta"></v-text-field>
           </v-col>
         </v-row>
 
         <h5>Configurações de teste</h5>
-        <v-row align="baseline"  class="mb-4">
+        <v-row align="baseline" class="mb-4">
           <v-col class="d-flex" cols="9" sm="2">
-            <v-text-field type="number" :disabled="trava" label="Valor do erro" :rules="rules" hide-details="auto" required v-model="form.valorErro"></v-text-field>
+            <v-text-field type="number" :disabled="trava" label="Valor do erro" :rules="rules" hide-details="auto"
+              required v-model="form.valorErro"></v-text-field>
           </v-col>
 
           <v-col class="d-flex" cols="9" sm="2">
-            <v-text-field type="number" :disabled="trava" label="Nº de interações" :rules="rules" hide-details="auto" required v-model="form.nrInteracoes"></v-text-field>
+            <v-text-field type="number" :disabled="trava" label="Nº de interações" :rules="rules" hide-details="auto"
+              required v-model="form.nrInteracoes"></v-text-field>
           </v-col>
 
           <v-col class="d-flex" cols="9" sm="2">
-            <v-text-field type="number" :disabled="trava" label="Tx. aprendizagem" :rules="rules" hide-details="auto" required v-model="form.txAprendizagem"></v-text-field>
+            <v-text-field type="number" :disabled="trava" label="Tx. aprendizagem" :rules="rules" hide-details="auto"
+              required v-model="form.txAprendizagem"></v-text-field>
           </v-col>
 
           <v-col class="d-flex" cols="9" sm="3">
-            <v-select :disabled="trava" :items="items" label="Função de Transferência" :rules="rules" required v-model="form.funcaoTransf"></v-select>
+            <v-select :disabled="trava" :items="items" label="Função de Transferência" :rules="rules" required
+              v-model="form.funcaoTransf"></v-select>
           </v-col>
         </v-row>
 
         <v-row align="center" class="mb-4">
           <v-col class="d-flex" cols="9" sm="9">
-            <v-file-input :disabled="trava" counter v-on:change="saveTreino"  required show-size accept=".csv"
+            <v-file-input :disabled="trava" counter v-on:change="saveTreino" required show-size accept=".csv"
               label="Arquivo de Treino"></v-file-input>
           </v-col>
         </v-row>
@@ -51,7 +57,7 @@
         </v-row>
         <v-row align="left" class="v-row align-center mb-4">
           <v-div class="d-flex justify-center align-baseline" style="gap: 1rem">
-            
+
           </v-div>
         </v-row>
         <v-row align="left" class="d-flex justify-center float-left mb-4">
@@ -62,7 +68,7 @@
             <v-btn color="success" @click="initTreino()" v-model="btn">
               Iniciar Treino
             </v-btn>
-            <v-btn color="success" @click="initTeste()" v-model="btn" :disabled="!trava">
+            <v-btn color="success" @click="sendTeste()" v-model="btn" :disabled="!trava">
               Iniciar Teste
             </v-btn>
             <v-btn color="red" @click="cancel()">
@@ -76,15 +82,42 @@
         <v-table fixed-header height="300px" style="border-top: 2px">
           <thead>
             <tr>
-              <th class="text-left" v-for="h in header"  style="color: red">
+              <th class="text-left" v-for="h in header" style="color: red">
                 {{ h }}
-                <input v-if="h != header.at(header.length-1)" type="checkbox" id="h" value="h" v-model="checked" />
+                <input v-if="h != header.at(header.length - 1)" type="checkbox" id="h" value="h" v-model="checked" />
+
               </th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="item in dados">
-              <td  v-for="col in item">{{ col }}</td>
+              <td v-for="col in item">{{ col }}</td>
+            </tr>
+          </tbody>
+        </v-table>
+      </v-container>
+
+      <v-container v-if="(timeline.length !== 0)" style="background-color: #fff">
+        <TimelineExecucao :timeline="timeline">
+        </TimelineExecucao>
+      </v-container>
+
+      <v-container fluid :hidden="(Object.keys(matrizConfusao).length === 0)">
+        <hr>
+        <h5>Matriz de confusão</h5>
+        <v-table fixed-header height="300px" style="border-top: 2px">
+          <thead>
+            <tr>
+              <th></th>
+              <th class="text-left" v-for="h in matrizConfusao.classes" style="color: red">
+                {{ h }}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(item, index) in matrizConfusao.matriz">
+              <td style="color: red">{{ matrizConfusao.classes[index] }}</td>
+              <td v-for="col in item">{{ col }}</td>
             </tr>
           </tbody>
         </v-table>
@@ -94,8 +127,12 @@
 </template>
 
 <script>
+import TimelineExecucao from './TimeLineExecucao.js'
 export default {
   name: 'Formulario',
+  components: {
+    TimelineExecucao
+  },
   data: () => ({
     valid: true,
     rules:[v => !!v || 'Campo obrigatório'],
@@ -110,6 +147,7 @@ export default {
       camadaOculta: "",
       qtdEntrada: 0,
       qtdSaida: 0,
+      arquivoTreino : ""
     },
     tab: "",
     fileTreino: [],
@@ -126,6 +164,8 @@ export default {
     header: [],
     dados: [],
     dadosTabela: [],
+    matrizConfusao: {},
+    timeline: [],
   }),
   methods: {
     loadTreino()
@@ -147,19 +187,27 @@ export default {
         }
       );
     },
-    sendTreino()
+    async sendTreino()
     {
       let dataForm = JSON.stringify(this.form);
       console.log(JSON.stringify(this.form));
-      fetch(`http://localhost:8081/sendTreino`, {
+      let res = await fetch(`http://localhost:8081/sendTreino`, {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
         method: 'POST',
         body: dataForm,
       });
+      this.timeline = await res.json();
+
     },
     cancel()
     {
       this.oculto = true;
       this.trava = false;
+      this.matrizConfusao = {};
+      this.timeline = [];
       this.$refs.form.reset();
     },
     saveTreino(e) {
@@ -171,6 +219,7 @@ export default {
     async sendFileTreino() {
       let dataForm = new FormData();
       dataForm.append('file', this.fileTreino[0]);
+      this.form.arquivoTreino = this.fileTreino[0].name;
       let res = await fetch(`http://localhost:8081/uploadFile`, {
         method: 'POST',
         body: dataForm,
@@ -179,12 +228,13 @@ export default {
     },
     async sendTeste() {
       let dataForm = new FormData();
+      console.log(this.fileTeste[0]);
       dataForm.append('file', this.fileTeste[0]);
-      let res = await fetch(`http://localhost:8081/uploadFile`, {
+      let res = await fetch(`http://localhost:8081/sendTeste`, {
         method: 'POST',
         body: dataForm,
       });
-      let data = await res.json();
+      this.matrizConfusao = await res.json();
     },
     async readFile() {
       let res = await fetch(`http://localhost:8081/getJson`, {
