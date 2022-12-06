@@ -113,7 +113,7 @@
       <v-container v-if="(timeline.length !== 0)" style="background-color: #fff">
         <hr>
         <h5>Gráfico de erro</h5>
-        <TimelineExecucao :timeline="timeline">
+        <TimelineExecucao :timeline="timeline" v-model="timeline">
         </TimelineExecucao>
       </v-container>
 
@@ -206,6 +206,7 @@ export default {
       );
     },
     async sendTreino() {
+      this.timeline =[];
       let dataForm = JSON.stringify(this.form);
       console.log(JSON.stringify(this.form));
       let res = await fetch(`http://localhost:8081/sendTreino`, {
