@@ -109,10 +109,10 @@
           </tbody>
         </v-table>
       </v-container>
-
+      <hr v-if="(timeline.length !== 0)">
+      <h5 v-if="(timeline.length !== 0)">Gráfico de erro</h5>
       <v-container v-if="(timeline.length !== 0)" style="background-color: #fff">
-        <hr>
-        <h5>Gráfico de erro</h5>
+        
         <TimelineExecucao :timeline="timeline" v-model="timeline">
         </TimelineExecucao>
       </v-container>
