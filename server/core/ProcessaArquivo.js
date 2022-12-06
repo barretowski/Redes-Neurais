@@ -5,12 +5,11 @@ export default class ProcessaArquivo {
     static arquivoParaObjeto(dir) {
         let arquivo = fs.readFileSync(dir, "utf8");
 
-        arquivo = arquivo.split("\r\n");
+        arquivo = arquivo.split(/\r?\n|\r|\n/g);
         
         for (let linha in arquivo) {
             arquivo[linha] = arquivo[linha].split(',');
-        }
-        
+        }        
         let cabecalho = arquivo.shift();
         let objeto = [];
         
