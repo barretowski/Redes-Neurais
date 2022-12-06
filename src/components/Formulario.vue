@@ -1,12 +1,8 @@
 <template>
-  <v-card style="position: relative;">
-    <div class="text-center" style="position: relative;" :hidden="progress">
-      <v-progress-circular
-      :size="300"
-      :width="7"
-      color="purple"
-      indeterminate
-    ></v-progress-circular>
+
+  <v-card>
+    <div class="text-center" style="position: absolute; width: 100%; height: 100%;" :hidden="progress">
+      <v-progress-circular :size="300" :width="7" color="purple" indeterminate></v-progress-circular>
     </div>
     <v-form v-model="valid" ref="form">
       <v-container fluid>
@@ -69,7 +65,8 @@
         </v-row>
         <v-row align="left" class="d-flex justify-center float-left mb-4">
           <v-div class="d-flex justify-center align-baseline" style="gap: 1rem">
-            <v-btn prepend-icon="mdi-cloud-upload" color="warning" variant="flat" @click="sendFileTreino()" :loading="loading[1]" :disabled="loading[1]" v-model="btn">
+            <v-btn prepend-icon="mdi-cloud-upload" color="warning" variant="flat" @click="sendFileTreino()"
+              :loading="loading[1]" :disabled="loading[1]" v-model="btn">
               Carregar Arquivo Treino
             </v-btn>
             <v-btn color="success" @click="initTreino(2)" :loading="loading[2]" :disabled="loading[2]" v-model="btn">
@@ -90,9 +87,18 @@
         <v-table fixed-header height="300px" style="border-top: 2px">
           <thead>
             <tr>
-              <th class="text-left" v-for="h in header" style="color: yellow">
-                <v-checkbox v-if="h != header.at(header.length - 1)" :label="h" :value="h"
-                  v-model="form.checkBox"></v-checkbox>
+              <th class="text-left" v-for="h in header" style="color: yellow; width: fit-content;">
+
+
+                <v-layout style="padding-top: 30px;">
+                  <v-checkbox v-if="h != header.at(header.length - 1)" :value="h" style="padding-right: 40px;"
+                    v-model="form.checkBox"></v-checkbox>
+                  <div style="padding-top: 19px;">
+                    {{ h.toUpperCase() }}
+                  </div>
+                </v-layout>
+
+
               </th>
             </tr>
           </thead>
@@ -262,7 +268,7 @@ export default {
     handleJson() {
       this.jsonObject = JSON.parse(this.jsonFile);
       let firstLine = this.jsonObject[0];
-      let columns = Object.keys(firstLine).toString().toLocaleUpperCase();
+      let columns = Object.keys(firstLine).toString();
       this.header = columns.split(",");
       this.form.qtdEntrada = this.header.length - 1;
       this.setValuesTable(columns);

@@ -32,11 +32,10 @@ export default class controller
     async sendTreino(req, res)
     {
       let dados = req.body;
-      let treino = ProcessaArquivo.arquivoParaObjeto("uploads/"+dados['arquivoTreino']);
-
+      let colunasSelecionadas = dados['checkBox'];
+      let treino = ProcessaArquivo.arquivoParaObjeto("uploads/"+dados['arquivoTreino'], colunasSelecionadas);
       let classes = ProcessaArquivo.obterClasses(treino);
       treino.dados = ProcessaArquivo.sanitizarDados(treino.dados, classes);
-
       let mapingFuncoes = {
         'Linear' : 0, 
         'Logística' : 1, 
@@ -51,6 +50,8 @@ export default class controller
       let limiteEpocas = parseFloat(dados['nrInteracoes']);
       let limiteErro = parseFloat(dados['valorErro']);
 
+
+
       let rede = new RedeNeural(
         quantidadeEntradas, 
         quantidadeCamadaInterna, 
@@ -60,6 +61,8 @@ export default class controller
         limiteEpocas, 
         limiteErro
       );
+
+      rede.colunasSelecionadas = colunasSelecionadas;
 
       rede.treinar(treino.dados, classes);
 
@@ -74,7 +77,7 @@ export default class controller
       let json = fs.readFileSync("uploads/treino.json");
       let objetoRede = JSON.parse(json);
 
-      let teste = ProcessaArquivo.arquivoParaObjeto("uploads/" + nomeArquivo);
+      let teste = ProcessaArquivo.arquivoParaObjeto("uploads/" + nomeArquivo, objetoRede.colunasSelecionadas);
       teste.dados = ProcessaArquivo.sanitizarDados(teste.dados, objetoRede.classes);
   
       let rede = new RedeNeural(
