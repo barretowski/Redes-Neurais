@@ -1,5 +1,13 @@
 <template>
-  <v-card>
+  <v-card style="position: relative;">
+    <div class="text-center" style="position: relative;" :hidden="progress">
+      <v-progress-circular
+      :size="300"
+      :width="7"
+      color="purple"
+      indeterminate
+    ></v-progress-circular>
+    </div>
     <v-form v-model="valid" ref="form">
       <v-container fluid>
         <h5><v-icon icon="mdi-cog-outline" size="x-small"></v-icon> Configurações de neurônios</h5>
@@ -18,7 +26,6 @@
               v-model="form.camadaOculta"></v-text-field>
           </v-col>
         </v-row>
-
         <h5><v-icon icon="mdi-test-tube" size="x-small"></v-icon> Configurações de teste</h5>
         <v-row align="baseline" class="mb-4">
           <v-col class="d-flex" cols="9" sm="2">
@@ -137,6 +144,7 @@ export default {
   },
   data: () => ({
     valid: true,
+    progress: true,
     rules: [v => !!v || 'Campo obrigatório'],
     rulesFile: [v => !!v || 'File is required'],
     rulesErro: [v => !!v || 'Campo obrigatório', 
@@ -183,6 +191,7 @@ export default {
         resp => {
           if (resp.valid) {
             this.load(i);
+            this.progress = true;
             this.sendTreino();
           }
           else
@@ -202,7 +211,7 @@ export default {
         body: dataForm,
       });
       this.timeline = await res.json();
-
+      this.loading[2] = false;this.progress = true;
     },
     cancel() {
       this.header = [];
@@ -220,6 +229,7 @@ export default {
     },
     async sendFileTreino() {
       this.load(1);
+      this.progress = false;
       let dataForm = new FormData();
       dataForm.append('file', this.fileTreino[0]);
       this.form.arquivoTreino = this.fileTreino[0].name;
@@ -231,6 +241,7 @@ export default {
     },
     async sendTeste(i) {
       this.load(i);
+      this.progress = false;
       let dataForm = new FormData();
       dataForm.append('file', this.fileTeste[0]);
       let res = await fetch(`http://localhost:8081/sendTeste`, {
@@ -238,6 +249,8 @@ export default {
         body: dataForm,
       });
       this.matrizConfusao = await res.json();
+      this.loading[3] = false;
+      this.progress = true;
     },
     async readFile() {
       let res = await fetch(`http://localhost:8081/getJson`, {
@@ -281,19 +294,11 @@ export default {
       });
       this.form.qtdSaida = this.arrayClass.length;
       this.form.camadaOculta = Math.round((this.form.qtdEntrada + this.form.qtdSaida)/2);
+      this.progress = true;
+      this.loading[1] = false, this.oculto = false;
     },
     load(i) {
       this.loading[i] = true;
-      switch (i) {
-        case 1:
-          setTimeout(() => (this.loading[i] = false, this.oculto = false), 5000); break;
-        case 2:
-          setTimeout(() => (this.loading[i] = false), 15000); break;
-        case 3:
-          setTimeout(() => (this.loading[i] = false), 20000); break;
-
-      }
-
     },
   },
 
