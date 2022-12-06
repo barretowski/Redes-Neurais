@@ -91,11 +91,12 @@
 
 
                 <v-layout style="padding-top: 30px;">
-                  <v-checkbox v-if="h != header.at(header.length - 1)" :value="h" style="padding-right: 40px;"
-                    v-model="form.checkBox"></v-checkbox>
                   <div style="padding-top: 19px;">
                     {{ h.toUpperCase() }}
                   </div>
+                  <v-checkbox v-if="h != header.at(header.length - 1)" :value="h" style="padding-right: 40px;"
+                    v-model="form.checkBox">
+                  </v-checkbox>
                 </v-layout>
 
 
