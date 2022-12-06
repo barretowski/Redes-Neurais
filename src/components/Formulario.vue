@@ -89,7 +89,6 @@
             <tr>
               <th class="text-left" v-for="h in header" style="color: yellow; width: fit-content;">
 
-
                 <v-layout style="padding-top: 30px;">
                   <v-checkbox v-if="h != header.at(header.length - 1)" :value="h" style="padding-right: 40px;"
                     v-model="form.checkBox"></v-checkbox>
@@ -283,6 +282,7 @@ export default {
     setValuesTable(columns) {
       let matrix = [];
       let line, i = 0;
+      let novosDados = [];
       this.jsonObject.forEach(element => {
         matrix[i] = [];
         line = Object.values(element).toString();
@@ -295,9 +295,10 @@ export default {
           }
         }
         this.createObject(line);
-        this.dados.push(matrix[i]);
+        novosDados.push(matrix[i]);
         i++;
       });
+      this.dados = novosDados;
       this.form.qtdSaida = this.arrayClass.length;
       this.form.camadaOculta = Math.round((this.form.qtdEntrada + this.form.qtdSaida)/2);
       this.progress = true;

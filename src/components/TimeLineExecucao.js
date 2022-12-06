@@ -52,7 +52,6 @@ export default defineComponent({
   
   },
   setup(props) {
-    console.log(props.timeline);
     let labels = props.timeline.map((row) => row.epocas)
     let data = props.timeline.map((row) => row.erro)
     const chartData = {
